@@ -1,21 +1,14 @@
-FROM ubuntu:latest
-ARG GTEST_DIR=/usr/local/src/googletest/googletest
-
-# Fix enter timezone issue
-ENV TZ=Europe/Helsinki
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+FROM debian:bookworm
 
 RUN apt-get update
+
 RUN apt-get upgrade -y
-RUN apt-get install git-core sudo build-essential cmake valgrind libcppunit-dev -y
 
-# Build Google Test
-RUN git clone https://github.com/google/googletest.git /usr/local/src/googletest
-COPY ./Makefile.gtest ${GTEST_DIR}/make/Makefile.local
-RUN cd ${GTEST_DIR}/make && make -f Makefile.local && make -f Makefile.local install
-RUN ln -s ${GTEST_DIR}/make/sample1_unittest 
+# Basic dependencies
+RUN apt-get install git-core sudo build-essential cmake valgrind libcppunit-dev vim zsh gcc g++ make git -y
 
-# TODO: add Quick test, Boost test, Catch test
+# OpenGL dependencies
+RUN apt-get install libgl1-mesa-dev libglew-dev xorg libxext-dev zlib1g-dev libbsd-dev -y
 
 WORKDIR /valgrind
 
